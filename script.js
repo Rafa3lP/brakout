@@ -10,13 +10,14 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let x = canvas.width / 2;
 let y = canvas.height - 30;
 
-let dx = 2;
-let dy = -2;
+let dx = 3;
+let dy = -3;
 
 let rightPressed = false;
 let leftPressed = false;
 
 let score = 0;
+let lives = 3;
 
 const brickRowCount = 3;
 const brickColumnCount = 5;
@@ -74,7 +75,13 @@ function drawPaddle() {
 function drawScore() {
   ctx.font = "16px Arial";
   ctx.fillStyle = "#0095DD";
-  ctx.fillText(`Score: ${score}`, 8, 20);
+  ctx.fillText(`Score: ${score}`, 20, 20);
+}
+
+function drawLives() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText(`Chances: ${lives}`, canvas.width - 100, 20);
 }
 
 function collisionDetection() {
@@ -95,7 +102,6 @@ function collisionDetection() {
           if(score === brickRowCount * brickColumnCount) {
             alert("PARABÉNS, VOCÊ GANHOU!");
             document.location.reload();
-            clearInterval(interval); 
           }
         }
       }
@@ -132,8 +138,6 @@ document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
 
-const interval = setInterval(draw, 10);
-
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -141,6 +145,7 @@ function draw() {
   drawBall();
   drawPaddle();
   drawScore();
+  drawLives();
   collisionDetection();
 
   if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
@@ -153,9 +158,17 @@ function draw() {
     if (x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy;
     } else {
-      alert("GAME OVER");
-      document.location.reload();
-      clearInterval(interval);
+      lives--;
+      if(!lives) {
+        alert("GAME OVER");
+        document.location.reload();
+      } else {
+        x = canvas.width / 2;
+        y = canvas.height - paddleHeight - ballRadius;
+        dx = 3;
+        dy = -3;
+        paddleX = (canvas.width - paddleWidth) / 2;
+      }
     }
   }
 
@@ -167,4 +180,8 @@ function draw() {
 
   x += dx;
   y += dy;
+
+  requestAnimationFrame(draw);
 }
+
+draw();
